@@ -1,0 +1,124 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Competence Task</title>
+</head>
+<body>
+    <div style="font-family:sans-serif;margin-left:auto;margin-right:auto;width:60%">
+        <span id="accept"><p></p></span>
+        <br />
+        <p style="text-align:center;font-size:1.5em;">Please look at the following picture:</p>
+        <br />
+        <img src="https://s3.amazonaws.com/mturkfaces/exampleface.jpg" alt="image" style="display:block;margin-left:auto;margin-right:auto;" />
+        <br />
+        <form name='mturk_form' method='post' id='submitform' action='https://workersandbox.mturk.com/mturk/externalSubmit'>
+        <!--
+        <form name='mturk_form' method='post' id='submitform' action='https://www.mturk.com/mturk/externalSubmit'>
+        -->
+        <div>
+            <p>How <b>competent</b> is the <span id="type">person</span> in this photo?</p>
+            <table>
+                <tr>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='0' name='competent' id='competent0' required /> 0<br/>extremely<br/>incompetent</label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='1' name='competent' id='competent1' required /> 1<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='2' name='competent' id='competent2' required /> 2<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='3' name='competent' id='competent3' required /> 3<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='4' name='competent' id='competent4' required /> 4<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='5' name='competent' id='competent5' required /> 5<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='6' name='competent' id='competent6' required /> 6<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='7' name='competent' id='competent7' required /> 7<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='8' name='competent' id='competent8' required /> 8<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='9' name='competent' id='competent9' required /> 9<br/><br/></label></td>
+                    <td style="width:80px;vertical-align:top;"><label><input type='radio' value='10' name='competent' id='competent10' required /> 10 <br/>extremely<br/>competent</label></td>
+                </tr>
+            </table>
+            <br/><br/>
+            <table>
+                <tr>
+                    <td>Do you recognize the person in this photo?</td>
+                    <td><label><input type='radio' value='1' name='recognized' id='recognized1' /> Yes</label></td>
+                    <td><label><input type='radio' value='0' name='recognized' id='recognized0' checked = 'checked' /> No</label></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td><em>If yes, who is it?</em></td>
+                    <td><input type='text' value='' name='name' id='name' size = 35 /></td>
+                </tr>
+            </table>
+            <br/><br/><br/>
+            <div style="font-size:.75em;float:right;">
+                <table>
+                    <tr>
+                        <td><label><input type='checkbox' value='1' name='problem' id='problem' /> The image did not appear</label></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <input type='hidden' value='' name='condition' id='condition' />
+        <input type='hidden' value='' name='assignmentId' id='assignmentId' />
+        <input type='hidden' value='' name='browser' id='browser' />
+        <input type='hidden' value='' name='engine' id='engine' />
+        <input type='hidden' value='' name='platform' id='platform' />
+        <input type='hidden' value='' name='language' id='language' />
+        <input type='hidden' value='' name='width' id='width' />
+        <input type='hidden' value='' name='height' id='height' />
+        <input type='hidden' value='' name='resolution' id='resolution' />
+        <script>
+            /* function to extract parameters from URL */
+            function turkGetParam( name ) { 
+              var regexS = "[\?&]"+name+"=([^&#]*)"; 
+              var regex = new RegExp( regexS ); 
+              var tmpURL = fullurl; 
+              var results = regex.exec( tmpURL ); 
+              if( results == null ) { 
+                return ""; 
+              } else { 
+                return results[1];    
+              } 
+            }
+
+            var fullurl = window.location.href;
+            var assign = turkGetParam('assignmentId');
+            var hit = turkGetParam('hitId');
+            var worker = turkGetParam('workerId');
+
+            if(assign=="ASSIGNMENT_ID_NOT_AVAILABLE")
+                {
+                document.getElementById("accept").innerHTML = "<p style='font-weight:bold;text-align:center;'>Please accept the HIT!</p><br />";
+                }
+            else
+                {
+                var ascii = worker.toUpperCase().charCodeAt(worker.length-1);
+                var j;
+                if (ascii <=57) {
+                    j = ascii-47;
+                    }
+                else {
+                    j = ascii-54;
+                    }
+                var nconditions = 2;
+                var i = j % nconditions;
+                var sid = new Array ();
+                sid[0] = "politician";
+                sid[1] = "person";
+                document.getElementById("condition").value = sid[i];
+                /* document.getElementById("type").innerHTML = sid[i]; */
+                
+                document.getElementById('assignmentId').value = assign;
+                document.getElementById('browser').value = navigator.userAgent;
+                document.getElementById('engine').value = navigator.product;
+                document.getElementById('platform').value = navigator.platform;
+                document.getElementById('language').value = navigator.language;
+                document.getElementById('width').value = screen.width;
+                document.getElementById('height').value = screen.height;
+                document.getElementById('resolution').value = screen.colorDepth;
+                }
+        </script>
+        <input type="submit" value="Submit">
+        </form>
+        <br />
+    </div>
+</body>
+</html>
