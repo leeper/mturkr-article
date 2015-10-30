@@ -6,15 +6,12 @@
 </head>
 <body>
     <div style="font-family:sans-serif;margin-left:auto;margin-right:auto;width:60%">
-        <span id="accept"><p></p></span>
-        <br />
+        <div id="accept"></div>
         <p style="text-align:center;font-size:1.5em;">Please look at the following picture:</p>
-        <br />
-        <img src="https://s3.amazonaws.com/mturkfaces/exampleface.jpg" alt="image" style="display:block;margin-left:auto;margin-right:auto;" />
-        <br />
-        <form name='mturk_form' method='post' id='submitform' action='https://workersandbox.mturk.com/mturk/externalSubmit'>
-        <!--
+        <img src="${face}" alt="image" style="display:block;margin-left:auto;margin-right:auto;" />
         <form name='mturk_form' method='post' id='submitform' action='https://www.mturk.com/mturk/externalSubmit'>
+        <!--
+        <form name='mturk_form' method='post' id='submitform' action='https://workersandbox.mturk.com/mturk/externalSubmit'>
         -->
         <div>
             <p>How <b>competent</b> is the <span id="type">person</span> in this photo?</p>
@@ -33,7 +30,7 @@
                     <td style="width:80px;vertical-align:top;"><label><input type='radio' value='10' name='competent' id='competent10' required /> 10 <br/>extremely<br/>competent</label></td>
                 </tr>
             </table>
-            <br/><br/>
+            <br/>
             <table>
                 <tr>
                     <td>Do you recognize the person in this photo?</td>
@@ -47,7 +44,7 @@
                     <td><input type='text' value='' name='name' id='name' size = 35 /></td>
                 </tr>
             </table>
-            <br/><br/><br/>
+            <br/><br/>
             <div style="font-size:.75em;float:right;">
                 <table>
                     <tr>
@@ -56,6 +53,7 @@
                 </table>
             </div>
         </div>
+        <input type='hidden' value='${face}' name='face' id='face' />
         <input type='hidden' value='' name='condition' id='condition' />
         <input type='hidden' value='' name='assignmentId' id='assignmentId' />
         <input type='hidden' value='' name='browser' id='browser' />
@@ -104,8 +102,9 @@
                 sid[0] = "politician";
                 sid[1] = "person";
                 document.getElementById("condition").value = sid[i];
-                /* document.getElementById("type").innerHTML = sid[i]; */
-                
+                if(sid[i] != undefined) {
+                    document.getElementById("type").innerHTML = sid[i];
+                }
                 document.getElementById('assignmentId').value = assign;
                 document.getElementById('browser').value = navigator.userAgent;
                 document.getElementById('engine').value = navigator.product;

@@ -4,7 +4,7 @@
 
 \maketitle
 
-\abstract{This article introduces the use of the Amazon Mechanical Turk (MTurk) crowdsourcing platform as a resource for R users, taking advantage of a highly developed package for R. While MTurk has many uses, especially to users from the social sciences, this article focuses on ways that MTurk can help R users, especially those dealing with messy data problems. The package, \CRANpkg{MTurkR}, provides users access to the full functionality of the MTurk platform, reducing barriers to entry for researchers to begin research projects through the platform, while also providing human intelligence to supplement the computational capacity of R. This article outlines MTurk and its utility for crowdsourcing, describes the MTurkR package, and demonstrates how to gather and manage data from MTurk using some of the package's core functionality. As an example of a massive data preprocessing, an image rating task involving 225 workers and more than 5000 images is demonstrated using just three function calls.}
+\abstract{This article introduces the use of the Amazon Mechanical Turk (MTurk) crowdsourcing platform as a resource for R users, taking advantage of a highly developed package for R. While MTurk has many uses, especially to users from the social sciences, this article focuses on ways that MTurk can help users preprocess ``messy'' data. The package, \CRANpkg{MTurkR}, provides users access to the full functionality of the MTurk platform, reducing barriers to entry for researchers to begin research projects through the platform, while also providing human intelligence to supplement the computational capacity of R. This article outlines MTurk and its utility for crowdsourcing, describes the MTurkR package, and demonstrates how to gather and manage data from MTurk using some of the package's core functionality. As an example of a massive data preprocessing, an image rating task involving 225 workers and more than 5500 images is demonstrated using just three function calls.}
 
 People use R because it is extensible, robust, and free. But R is still just a computing environment, with the computational limitations inherent in any such environment. It can do many things, but doing those many things generally requires data structures that are R-ready or that can be parsed with one of R's many input functions. Yet R users working in many real-world situations are sometimes faced with data that are not R-ready: handwritten survey responses, digitized texts that cannot be read by optical character recognition, images, etc. Or, alternatively, a data analyst may face machine readable data but require human interpretation to categorize, translate, or code those data. For example, someone wishing to build an automated classifier may require a human-categorized training set that is not yet available.
 
@@ -41,7 +41,7 @@ Before using MTurk or MTurkR, one needs to have an MTurk requester account, whic
 
 Before using MTurkR, one needs to retrieve Amazon Access Keys from \url{https://console.aws.amazon.com/iam/home?#security_credential}. The \dfn{keypair} is a linked \dfn{Access Key ID} and a \dfn{Secret Access Key}. In combination, these security credentials allow MTurkR to access the API. It is possible to create multiple keypairs per requester account (e.g., to share a requester account) and to replace old keypairs with new ones for security reasons. In MTurkR, the keypair is a two-element character vector with the Access Key ID as the first element and the Secret Access Key as the second element. This keypair is used to authenticate API requests.
 
-The MTurk API is somewhat dated by comparison to contemporary web development standards, relying exclusively on HTTP POST requests and supplying response structures only in XML. MTurkR converts all responses into R data structures (typically data.frames) that can be directly used in analysis with no need for manual conversions to R-readable data.\footnote{HTTP requests are implemented using curl \citep{Ooms2015} and XML parsing is provided by \CRANpkg{XML} \citep{Lang2012b}. The raw XML responses are stored, by default, in a tab-separated value log file in the user's working directory, alongside information about API requests.} In the event an API request fails, error reporting information is returned instead of the standard data structure. Aside from problems with authentication or attempting to retrieve HIT data that does not exist, users are very unlikely to encounter API-related errors because MTurkR was programmed to capture almost all potential request errors within R prior to attempting an API request.
+The MTurk API is somewhat dated by comparison to contemporary web development standards, relying exclusively on HTTP POST requests and supplying response structures only in XML. MTurkR converts all responses into R data structures (typically data.frames) that can be directly used in analysis with no need for manual conversions to R-readable data.\footnote{HTTP requests are implemented using \CRANpkg{curl} \citep{Ooms2015} and XML parsing is provided by \CRANpkg{XML} \citep{TempleLang2012b}. The raw XML responses are stored, by default, in a tab-separated value log file in the user's working directory, alongside information about API requests.} In the event an API request fails, error reporting information is returned instead of the standard data structure. Aside from problems with authentication or attempting to retrieve HIT data that does not exist, users are very unlikely to encounter API-related errors because MTurkR was programmed to capture almost all potential request errors within R prior to attempting an API request.
 
 \section{Using MTurkR}
 The simplest MTurkR request is to check the balance in one's account. To do so, first define the two-element keypair vector with a call to \code{options(MTurkR.keypair = c("AWSAccessKeyId", "AWSSecretAccessKey"))}. These values can also be passed as a \code{keypair} argument to any MTurkR function, but they are otherwise automatically retrieved from the value stored in \code{options()}. A call to \code{AccountBalance()}, with no arguments, returns a ``Hello world!''-style response informing you of the currency balance in your account in U.S. Dollars.\footnote{The API does not allow you to add funds to your account, which must therefore be done through the web interface: \url{https://requester.mturk.com/mturk/prepurchase}.} All MTurkR functions by default send requests to the live server, but can be sent to the sandbox by adding a \code{sandbox=TRUE} parameter to the function call (e.g., \code{GetAccountBalance(sandbox=TRUE)} always returns a balance of \$10,000.00). The sandbox parameter can also be changed globally with \code{options("MTurkR.sandbox" = TRUE)}. For most functions, the object returned by an MTurkR function is a data.frame containing one or more records.\footnote{Details for specific functions can be found in the MTurk documentation \citep{Leeper2012c}.}
@@ -166,10 +166,12 @@ In most cases, specifying an HTMLQuestion is the easiest approach. This simply m
 <html>
  <head>
   <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
-  <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+  <script type='text/javascript' 
+   src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
  </head>
  <body>
-  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
+  <form name='mturk_form' method='post' id='mturk_form' 
+   action='https://www.mturk.com/mturk/externalSubmit'>
   <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
   <h1>What's up?</h1>
   <p><textarea name='comment' cols='80' rows='3'></textarea></p>
@@ -336,10 +338,12 @@ There are four functions that have been added to MTurkR to facilitate the bulk c
 <html>
  <head>
   <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
-  <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+  <script type='text/javascript' 
+   src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
  </head>
  <body>
-  <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'>
+  <form name='mturk_form' method='post' id='mturk_form' 
+   action='https://www.mturk.com/mturk/externalSubmit'>
   <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
   <h1>${hittitle}</h1>
   <p>${hitvariable}</p>
@@ -444,13 +448,11 @@ SetHITTypeNotification(hit.type = hittype1$HITTypeId,
 
 \noindent When this HIT expires, an email containing the HITId will be sent to the specified email address. The process of sending notifications to an SQS queue is more complicated, but details are provided in the MTurkR documentation.
 
-\section{An Example: Photo Rating}
+\section{An Example of Massive-Scale Photo Rating}
 
-To demonstrate the ease with which MTurkR can process a massive amount of data, I provide a simple example of a photo rating task. Here, I was interested in obtaining a rating of ``facial competence'' for U.S. politicians compared with the ratings of faces from the general U.S. population as a whole. Facial competence is said to enhance politicians' electoral success, but previous studies have always relied on samples of politicians only and never compared these to a general population sample. Are politicians generally more facially competent than other individuals?
+To demonstrate the ease with which MTurk workers can be used to preprocess a massive amount of data, I provide a simple example of a massive-scale photo rating task. Here, I was interested in obtaining a rating of ``facial competence'' for U.S. politicians compared with the ratings of faces from the general U.S. population as a whole. Facial competence is said to enhance politicians' electoral success, but previous studies have always relied on samples of politicians only and never compared these to a general population sample. Are politicians generally more facially competent than other individuals?
 
-To provide a sampling of politicians' faces, I scraped photos of 533 members of 113th U.S. Congress from the website of the Government Printing Office. I then combined these photo data with 5000 randomly sampled images from the 10K U.S. Adult Faces Database \citep{BainbridgeIsolaOliva2013}.
-
-% Bainbridge, W. A., Isola, P., & Oliva, A. (2013). The Intrinsic Memorability of Face Photographs. Journal of Experimental Psychology: General, 142(4), 1323-1334. http://wilmabainbridge.com/facememorability2.html
+To provide a sampling of politicians' faces, I scraped photos of 533 members of 113th U.S. Congress from the website of the Government Printing Office. I then combined these photo data with 5000 randomly sampled images from the 10K U.S. Adult Faces Database \citep{BainbridgeIsolaOliva2013} and standardized the image size and resolution across all faces.\footnote{Complete code to perform the scraping and image processing are provided along with supplemental material for this article at \url{https://github.com/leeper/mturkr-article}.}
 
 \begin{figure}
 \begin{center}
@@ -469,7 +471,7 @@ The entire code necessary to implement this project is shown below. It involves 
 library("MTurkR")
 
 # Setup Qualification Requirement
-## U.S.-based, 95% approvale on HITs
+## U.S.-based, 95\% approval on HITs
 qual <- 
 GenerateQualificationRequirement(c("Locale", "Approved"), 
                                  c("==", ">"), 
@@ -477,16 +479,20 @@ GenerateQualificationRequirement(c("Locale", "Approved"),
                                  preview = TRUE)
 
 # Register HITType
+desc <- "Judge the competence of a person from an image of their face.
+ The HIT involves only one question: a rating of the competence of the
+ person. You have 45 seconds to complete the HIT. There are several
+ thousand HITs available in this batch. If you recognize the person,
+ please enter their name in the space provided; your work will still be
+ approved even if you recognize the face."
 hittype <- 
 RegisterHITType(title = "Rate the competence of a person",
-                description = "Judge the competence of a person from an image of their face. The HIT involves only one question: a rating of the competence of the person. You have 45 seconds to complete the HIT. There are several thousand HITs available in this batch. If you recognize the person, please enter their name in the space provided; your work will still be approved even if you recognize the face.",
+                description = desc,
                 reward = "0.01",
                 duration = seconds(seconds = 45), 
-                # 1-day auto-approval
                 auto.approval.delay = seconds(days = 1),
-                # attach QualificationRequirement
                 qual.req = qual,
-                keywords = "categorization, photo, image, rate, rating, face, judgment, batch, quick, fast, easy, competent")
+                keywords = "categorization, photo, image, rating, fast, easy")
 
 # All faces were loaded into Amazon S3
 s3url <- "https://s3.amazonaws.com/mturkfaces/"
@@ -507,26 +513,57 @@ BulkCreateFromTemplate(template = "facetemplate.html",
                        annotation = "Face Categorization 2015-06-08")
 \end{example}
 
-\noindent The \code{bulk} object contains a list of details about each HIT. Once the crowdsourcing is completed, it is trivial to retrieve the results using \code{GetAssignments()} based on the \code{annotation} argument:
+\noindent The \code{bulk} object contains a list of details about each HIT. Once the crowdsourcing is completed, it is trivial to retrieve the results using \code{GetAssignments()} based on the \code{annotation} argument. The result is a large data.frame with 27670 rows and 25 variable columns:
 
 \begin{example}
 a <- GetAssignments(annotation = "Face Categorization 2015-06-08")
+dim(a)
+# [1] 27670    25
+names(a)
+#  [1] "AssignmentId"          "WorkerId"              "HITId"                
+#  [4] "AssignmentStatus"      "AutoApprovalTime"      "AcceptTime"           
+#  [7] "SubmitTime"            "ApprovalTime"          "RejectionTime"        
+# [10] "RequesterFeedback"     "ApprovalRejectionTime" "SecondsOnHIT"         
+# [13] "competent"             "recognized"            "name"                 
+# [16] "face"                  "condition"             "browser"              
+# [19] "engine"                "platform"              "language"             
+# [22] "width"                 "height"                "resolution"           
+# [25] "problem"
 \end{example}
 
-\noindent The resulting structure is a data.frame, with one rating per row. The rating itself is stored in a variable called \code{competent} drawn from the \code{name} attribute of the radio buttons used in the HTMLQuestion form.
+\noindent Most of the columns contain metadata for each identifying each unique assignment (AssignmentId, WorkerId, HITId), metadata about the completion of the assignment (AssignmentStatus, AutoAprpovalTime, AcceptTime, SubmitTime, ApprovalTime, RejectionTime, RequesterFeedback, ApprovalRejectionTime, SecondsOnHIT), and then several columns displaying responses to the three HIT questions displayed to the workers: \code{competent}, \code{recognized}, and \code{name}. The names of these variables are specifying by the \code{name} atttribute of the radio buttons used in the HTMLQuestion form. Note that this HIT also includes a number of additional variables that record metadata about the worker's browser, which were recorded automatically via javascript.
 
-% describe analysis here
+A limitation of the MTurk API is that it does not return information about the values of variables replaced in the templating process, so it makes it difficult to identify which assignment(s) correspond to which input values. One way to get around this is to merge the input values (e.g., the \code{d} data.frame in the above code) with the HITIds from the \code{bulk} list and finally combine these with the \code{a} assignment data.frame. An easier strategy adopted here was to simply use the \code{\$\{face\}} variable twice in the template: once to actually display the image and one to record its value in a hidden field called \code{face} in the HTMLQuestion form. As a result, this variable becomes available to us in the assignment data.frame.
 
-% include some graphs and a regression table
+Setup in this way, it becomes trivial to analyze facial competence ratings of politicians and those from the general population sample. To perform the analysis, we simply conduct a \textit{t}-test for the mean difference in competence ratings between politicians' and non-politicians' faces. In these data, politicians' photos were identified by a simple pattern matching file name. (This would have more easily been done with a hidden HTML variable when creating the batch.). So, we extract the two variables from the assignment data.frame, convert them to numeric, and perform the test:
+
+
+\begin{example}
+competence <- as.numeric(a$competent)
+politician <- as.numeric(grepl("[[:digit:]]{2}-[[:digit:]]{3}", a$face))
+t.test(competence ~ politician)
+# 
+#         Welch Two Sample t-test
+# 
+# data:  competence by politician
+# t = -18.748, df = 3473.2, p-value < 2.2e-16
+# alternative hypothesis: true difference in means is not equal to 0
+# 95 percent confidence interval:
+#  -0.8456886 -0.6855561
+# sample estimates:
+# mean in group 0 mean in group 1 
+#        5.741885        6.507508
+\end{example}
+
+While this is a fairly trivial analytic exercise, it demonstrates the ease with which crowdsourced human intelligence can be leveraged to preprocess a massive amount of data, translating messy sources into easily analyzed data. Because crowdsourcing is inherently massively parallel, it dramatically reduces the amount of time needed to parse a rough data source. In this case, the MTurk workers created the completed dataset in about 75 minutes. Were a single individual to attempt this task alone and it took (as a generous estimate) only 5 seconds to categorize each face, the task would be completed in 38.4 hours, or about 31-times as long as with MTurk. The crowdsourced method, while perhaps more expensive, delivers data in a fraction of the time thereby allowing the analyst to focus on statistics rather than data wrangling.
 
 \section{Conclusion}
 
-This paper has described the MTurk platform and offered an introduction to MTurkR focused on preprocessing of messy data for immediate use in R. While this article has laid out some of the core functionality of MTurkR, the package provides additional functionality, for example to contact workers, pay bonuses to workers, and monitor one's own use of the platform not described here.
+This paper has described the MTurk platform and offered an introduction to MTurkR focused on preprocessing of messy data for immediate use in R. While this article has laid out some of the core functionality of MTurkR, the package provides many additional features not described here. Among the most useful to data scientists may be the ability to develop MTurk-based applications that rely on ``Review Policies'' that automatically evaluate the work submitted by MTurk workers. These Review Policies can approve and reject work or even extend the number of assignments for a HIT based on known correct answers included in a HIT, plurality agreement among workers, or both. Such applications could easily facilitate the preprocessing of complex or controversial data without the need for substantial human intervention to oversee the preprocessing stage.
 
-One important set of MTurkR functionality not described in this article is the graphical ``wizard'' interface. The wizard helps users, especially MTurk novices or those who do not want to use the standard R command line interface, to perform an array of operations on MTurk through a series of interactive, point-and-click menus. Functionality of the wizard remains under development, but currently supports nearly all of the functionality of the MTurkR package. It also streamlines the entry of the AWS keypair, switching between the sandbox and live server, and the management of assignments. Interested users should consult the MTurkR documentation for more information about the wizard.
+Another important set of MTurkR functionality not described in this article is Tcl/tk-based graphical ``wizard'' interface provided as part of the package. The wizard helps users, especially MTurk novices or those who do not want to use the standard R command line interface, to perform an array of operations on MTurk through a series of interactive, point-and-click menus. Functionality of the wizard remains under development, but currently supports nearly all of the functionality of the MTurkR package. Interested users should consult the MTurkR documentation for more information about the wizard. Additional details about MTurkR are available in the package documentation and on the MTurkR wiki: \url{https://www.github.com/leeper/MTurkR}.
 
-Additional details about MTurkR are available in the package documentation. The MTurkR package should enable innovation and broaden the uses of crowdsourced human intelligence through a set of common R commands that can be readily shared for the purpose of further enhancing the utility of the platform.
-
+In short, MTurkR provides a stable, well-developed R interface to one of the largest crowdsourcing sites presently available. The package has been developed and refined for more than three years, has extensive in-package and online documentation, and is incredibly easy to use. By providing a low-level wrapper to the Amazon Mechanical Turk API, it also means that MTurkR could serve well as the basis for much more sophisticated R applications that leverage human intelligence as an enhancement to the computational features already available in R.
 
 \bibliography{MTurkR}
 
