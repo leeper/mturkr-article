@@ -1,0 +1,92 @@
+%!bin/usr/pdflatex
+% Thomas J. Leeper
+% Aarhus University
+% January 29, 2013
+% MTurkR Workflow Graphics
+
+\documentclass[landscape,12pt]{article}
+
+\usepackage[latin1,]{inputenc}
+\usepackage{tikz, mdwlist}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usetikzlibrary{shapes,arrows}
+
+\begin{document}
+
+\pagestyle{empty}
+
+% Define block styles
+\tikzstyle{decision} = [diamond, draw, fill=blue!20, 
+    text width=4.5em, text badly centered, node distance=3cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle, draw, fill=blue!20, draw=none,
+    text width=2cm, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex', line width=1.5pt, color=gray!95]
+\tikzstyle{cloud} = [draw, ellipse,fill=blue!20, draw=none, minimum height=2em]
+    
+%\begin{figure}
+\begin{center}
+\begin{tikzpicture}[node distance = 2cm, auto]
+    % Place nodes
+    \node [block, text=white, fill=gray!95, minimum width=3cm, text width=3cm] (init) {\textbf{Data need}};
+    \node [block, below of=init, node distance=3cm, minimum width=4cm, 
+    		text width=3.5cm, fill=gray!15] (deconstruct) {Deconstruct need into single tasks};
+    \node [block, right of=deconstruct, node distance=4.5cm, minimum width=4cm, 
+    		text width=3.5cm, fill=gray!15] (design) {Design HITs for each task};
+    \node [block, below of=deconstruct, node distance=3.5cm, minimum width=4cm, text width=4cm] (hittype) {
+    	Register HITType
+%    	\begin{itemize*}
+%    	\item Description
+%    	\item Reward
+%    	\item Duration
+%    	\end{itemize*}
+    	};
+    \node [block, below of=hittype, node distance=2.5cm, minimum width=2.5cm, text width=3cm] (qualreq) {Qualification Requirements};
+    \node [cloud, right of=qualreq, node distance=4cm, minimum width=2cm, fill=red!20] (test) {Test};
+    \node [block, right of=hittype, node distance=5cm, minimum width=4cm, text width=4cm] (createhit) {
+    	Create HIT(s)
+%	\begin{itemize*}
+%    	\item Question
+%    	\item Expiration
+%    	\item Review Policies
+%    	\end{itemize*}
+    	};
+    \node [cloud, right of=createhit, node distance=5cm, fill=red!20] (assignment3) {Assignment};
+    \node [cloud, above of=assignment3, node distance=1cm, fill=red!20] (assignment2) {Assignment};
+    \node [cloud, above of=assignment2, node distance=1cm, fill=red!20] (assignment1) {Assignment};
+    \node [cloud, below of=assignment3, node distance=1cm, fill=red!20] (assignment4) {Assignment};
+    \node [cloud, below of=assignment4, node distance=1cm, fill=red!20] (assignment5) {Assignment};
+    \node [block, right of=assignment3, node distance=4.5cm, minimum width=3cm, text width=3cm] (review) {Review};
+    \node [block, right of=review, node distance=3.5cm, minimum height=1cm] (contact) {Contact};
+    \node [block, above of=contact, node distance=2.5cm, minimum height=1cm] (bonus) {Bonus};
+    \node [block, below of=contact, node distance=2.5cm, minimum height=1cm] (qual) {Qualify};
+    \node [block, above of=review, node distance=6.5cm, text=white, fill=gray!95, minimum width=3cm, text width=3cm] (analyze) {\textbf{Analyze data}};
+
+    %     % Draw edges
+    \path [line] (init) -- (deconstruct);
+    \path [line] (deconstruct) -- (design);
+    \path [line, dashed] (qualreq) -- (hittype);
+    \path [line, dashed] (test) -- (qualreq);
+    \path [line] (hittype) -- (createhit);
+    \draw [line] (design) to [out=270,in=90] (hittype);
+    \draw [line] (design) to [out=270,in=90] (createhit);
+    \path [line] (createhit) -- (assignment1);
+    \path [line] (createhit) -- (assignment2);
+    \path [line] (createhit) -- (assignment3);
+    \path [line] (createhit) -- (assignment4);
+    \path [line] (createhit) -- (assignment5);
+    \path [line] (assignment1) -- (review);
+    \path [line] (assignment2) -- (review);
+    \path [line] (assignment3) -- (review);
+    \path [line] (assignment4) -- (review);
+    \path [line] (assignment5) -- (review);
+    \path [line, dashed] (review) -- (bonus);
+    \path [line, dashed] (review) -- (contact);
+    \path [line, dashed] (review) -- (qual);
+    \path [line] (review) -- (analyze);
+    \draw [line, dashed, line width=.5pt] (qual) to [out=180,in=300] (qualreq);
+\end{tikzpicture}
+%\caption{MTurkR Workflow}
+\end{center}
+%\end{figure}
+
+\end{document}
