@@ -117,7 +117,4 @@ setwd("../")
 # upload the sampled images to S3
 ## this was done manually
 
-# run on MTurk (via separate MTurk script)
-source("FacesMTurkR.R")
-
 ### END ###
