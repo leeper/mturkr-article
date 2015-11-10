@@ -497,13 +497,13 @@ RegisterHITType(title = "Rate the competence of a person",
 # All faces were loaded into Amazon S3
 s3url <- "https://s3.amazonaws.com/mturkfaces/"
 # File names were saved as a character vector locally
-faces <- readRDS("mturkfaceorder.RDS")
+faces <- readRDS("faces_all.RDS")
 d <- data.frame(face = paste0(s3url,faces), 
                 stringsAsFactors = FALSE)
 
 # Create 5500 HITs
 bulk <- 
-BulkCreateFromTemplate(template = "facetemplate.html",
+BulkCreateFromTemplate(template = "mturk.html",
                        frame.height = 550,
                        input = d,
                        hit.type = hittype$HITTypeId,
