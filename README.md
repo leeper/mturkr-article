@@ -1,5 +1,7 @@
 # Crowdsourced Data Preprocessing with R and Amazon Mechanical Turk #
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.33595.svg)](http://dx.doi.org/10.5281/zenodo.33595)
+
 This repository contains some public materials about MTurkR, including:
 
  - The materials for [an article published in *The Political Methodologist* in 2013](tpm/tpm.pdf)
