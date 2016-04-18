@@ -142,6 +142,19 @@ str(a)
 # Reproduce analysis reported in manuscript
 competence <- as.numeric(a$competent)
 politician <- as.numeric(grepl("[[:digit:]]{2}-[[:digit:]]{3}", a$face))
+wilcox.test(competence ~ politician)
+## 
+##         Wilcoxon rank sum test with continuity correction
+## 
+## data:  competence by politician
+## W = 26886000, p-value < 2.2e-16
+## alternative hypothesis: true location shift is not equal to 0
+kruskal.test(competence ~ politician)
+## 
+##         Kruskal-Wallis rank sum test
+## 
+## data:  competence by politician
+## Kruskal-Wallis chi-squared = 271.82, df = 1, p-value < 2.2e-16
 t.test(competence ~ politician)
 ## 
 ##         Welch Two Sample t-test

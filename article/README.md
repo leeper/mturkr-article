@@ -5,7 +5,6 @@ This directory contains files needed to replicate a manuscript submission to *Th
  * `RJournal.sty`
  * `MTurkR.bib`
  * `RJwrapper.pdf`
- * `hit1.png`
  * `hit2.png`
  
 The other files reproduce the analysis reported in the manuscript's example:
