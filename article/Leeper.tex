@@ -4,7 +4,7 @@
 
 \maketitle
 
-\abstract{This article introduces the use of the Amazon Mechanical Turk (MTurk) crowdsourcing platform as a resource for R users to preprocess ``messy'' data into a form easily analyzed within R. The article first describes MTurk and the \CRANpkg{MTurkR} package, then outlines how to use \pkg{MTurkR} to gather and manage crowdsourced data with MTurk using some of the package's core functionality. Potential applications of \pkg{MTurkR} include construction of manually coded training sets, human transcription and translation, manual data scraping from scanned documents, content analysis, image classification, and the completion of online survey questionnaires, among others. As an example of massive data preprocessing, the article describes an image rating task involving 225 crowdsourced workers and more than 5500 images using just three \pkg{MTurkR} function calls.}
+\abstract{This article introduces the use of the Amazon Mechanical Turk (MTurk) crowdsourcing platform as a resource for R users to leverage crowdsourced human intelligence for preprocessing ``messy'' data into a form easily analyzed within R. The article first describes MTurk and the \CRANpkg{MTurkR} package, then outlines how to use \pkg{MTurkR} to gather and manage crowdsourced data with MTurk using some of the package's core functionality. Potential applications of \pkg{MTurkR} include construction of manually coded training sets, human transcription and translation, manual data scraping from scanned documents, content analysis, image classification, and the completion of online survey questionnaires, among others. As an example of massive data preprocessing, the article describes an image rating task involving 225 crowdsourced workers and more than 5500 images using just three \pkg{MTurkR} function calls.}
 
 \section{Introduction}
 
@@ -12,15 +12,15 @@ People use R because it is extensible, robust, and free. It can do many things, 
 
 In such cases, making the leap from these raw data to R data structures can entail considerable human labor. Such needs for human labor in data preprocessing has provoked interest in online crowdsourcing platforms \citep{Schmidt2010, ChenMenezesBradley2011} to bring human intelligence to tasks that cannot be easily accomplished through computation alone. This paper describes the use of \CRANpkg{MTurkR} \citep{Leeper2012c} to leverage the Amazon Mechanical Turk (MTurk) crowdsourcing platform to bring human intelligence into R. The article begins by laying out the need for occasional human intelligence in data preprocessing, then describes MTurk and its vocabulary, and introduces \pkg{MTurkR}. The remainder of the article describes the use of \pkg{MTurkR} for crowdsourced data preprocessing.
 
-\section{The Need for Human Intelligence}
-Some data cannot be computationally processed. Other data can be handled only with difficulty. In such cases, manual data processing often comes at the cost of time, money, and effort. Archetypal needs for human intelligence include the collection of data which cannot be automated (e.g., online data that lacks the well-defined structure to be scraped and parsed as XML or JSON), the preprocessing of ``messy'' data in formats that cannot be directly analyzed (e.g., handwritten documents scanned as PDFs), tasks that are laborious to translate from an R-readable but non-computable data structure into a format that can be readily analyzed (e.g., long, text answers to free-response survey questions), or massive-scale machine readable data that require human interpretation (e.g., the data used in generating a training set for supervised learning algorithms).
+\section{The need for human intelligence}
+Some data cannot be computationally processed. Other data can be handled only with difficulty. In these cases, data processing can be time consuming and expensive because of the human intelligence required. Archetypal needs for this kind of human intelligence include the collection of data which cannot be automated (e.g., unstructured or malformed web data), transcription of files into machine-readable data (e.g., audio, images, or handwritten documents scanned as PDFs), tasks that are laborious to translate from an R-readable but non-computable data structure into a format that can be readily analyzed (e.g., text answers to free-response survey questions), or massive-scale machine readable data that require human interpretation (e.g., the data used in generating a training set for supervised learning algorithms).
 
 Due to the manual nature of these tasks, processing such data can become challenging as the size of the dataset increases. Crowdsourcing these data preprocessing needs is therefore one way to obtain the scalable human intelligence needed to process even very large ``messy'' datasets. As opposed to an analyst engaged in manual preprocessing, crowdsourcing offers the possibility to leverage multiple sources of human intelligence, in parallel, thereby improving reliability and speed. Amazon Mechanical Turk (MTurk) stands out as one of the largest crowdsourcing platforms currently available and, given its powerful API, it is now accessible directly in R through \pkg{MTurkR}.
 
-\section{MTurk: Introduction and Core Concepts}
-Amazon Mechanical Turk is a crowdsourcing platform designed by Amazon.com as part of its suite of Amazon Web Service (AWS) tools to provide human intelligence for tasks that cannot be readily, affordably, or feasibly automated \citep{Amazon2012}. Because MTurk provides the web application for recruiting, paying, and managing human workers, the effort necessary to move a data cleaning task into the cloud is relatively effortless and can, in large part, be managed directly in R. While many early adopters of MTurk as a data generation tool have come from computer science \citep{MasonSuri2011, KitturChiSuh2008}, more recent attention has also emerged among social scientists who see MTurk's pool of workers as more than an affordable source of human labor \citep{BuhrmesterKwangGosling2011, BerinskyHuberLenz2010, PaolacciChandlerStern2010}. This article provides a sufficiently general overview of MTurk and \pkg{MTurkR} to enable its use for a variety of purposes, but focuses primarily on the uses of MTurk for data preprocessing.\footnote{Users specifically interested in social science survey and experimental applications should consult \citet{Leeper2013a} and the \pkg{MTurkR} documentation.}
+\section{MTurk core concepts}
+Amazon Mechanical Turk is a crowdsourcing platform designed by Amazon.com as part of its suite of Amazon Web Service (AWS) tools to provide human intelligence for tasks that cannot be readily, affordably, or feasibly automated \citep{Amazon2012}. Because MTurk provides the web application for recruiting, paying, and managing human workers, the effort necessary to move a data cleaning task into the cloud is relatively effortless and can, in large part, be managed directly in R. While many early adopters of MTurk as a data generation tool have come from computer science \citep{MasonSuri2011, KitturChiSuh2008}, more recent attention has also emerged in the social sciences where MTurk's pool of workers are seen as a low-cost participant pool for human subjects research \citep{BuhrmesterKwangGosling2011, BerinskyHuberLenz2010, PaolacciChandlerStern2010}. This article provides a sufficiently general overview of MTurk and \pkg{MTurkR} to enable its use for a variety of purposes, but focuses primarily on the uses of MTurk for data preprocessing.\footnote{Users specifically interested in social science survey and experimental applications should consult \citet{Leeper2013a} and the \pkg{MTurkR} documentation.}
 
-\subsection{Key Terms and Concepts}
+\subsection{Key terms}
 MTurk connects \dfn{requesters}, who are willing to pay \dfn{workers} to perform a given task or set of tasks at a specified price per task. These ``Human Intelligence Tasks'' (HITs), are the core element of the MTurk platform. A HIT is a task that a requester would like one or more workers to perform. Every HIT is automatically assigned a unique HITId to identify this HIT in the system. Performance of that HIT by one worker is called an \dfn{assignment}, indexed by a unique AssignmentId, such that a given worker can only complete one assignment per HIT but multiple workers can each complete an assignment for each HIT. As a simple example, if a HIT is a PDF file to be transcribed, the researcher might want three workers to complete the transcription in order to validate the effort and therefore make three assignments available for the one HIT.
 
 In other situations, however, a researcher may want workers to complete a set of related tasks. For example, the researcher may want to categorize a 5000 text statements such as free response answers on a survey into a set of fixed categories. Each of these statements could be treated as a separate HIT, grouped as a \dfn{HITType} with one (or more) assignment available for each HIT. While a worker could complete all 5000 assignments they might also code fewer (e.g., 50 statements), thereby leaving 4950 assignments for other workers to claim.
@@ -29,14 +29,15 @@ Workers choose which HITs to complete and how many HITs they want to complete at
 
 Once a worker completes a HIT, the requester can \dfn{review} the assignment --- that is, see the responses provided by the worker to the HIT --- and the requester can either \dfn{approve} (and thus pay the worker the pre-agreed ``reward'' amount) or \dfn{reject} (and not pay the worker).\footnote{Note that Amazon also charges a surcharge on all worker payments. Also, if the requester thinks the work merits additional compensation (or perhaps if workers are rewarded for completing multiple HITs of a given HITType), the requester can also pay a \dfn{bonus} of any amount to the worker at any point in the future.} This review process can be relatively automated or handled manually by the requester.
 
-The MTurk system records all workers that have ever performed work for a given requester and provides an array of functionality for tracking, organizing, paying, and corresponding with workers. In particular, the system allows requesters to regulate who can complete HITs through the use of \dfn{QualificationRequirements} (e.g., a worker's previous HIT approval rate, their country of residence, or a requester-defined qualification such as past performance or previously evaluated skill).
+The MTurk system records all workers that have ever performed work for a given requester and provides an array of functionality for tracking, organizing, paying, and corresponding with workers. In particular, the system allows requesters to regulate who can complete HITs through the use of \dfn{QualificationRequirements} (e.g., a worker's previous HIT approval rate, their country of residence, or a requester-defined Qualification such as past performance or previously evaluated skill).
 
+\subsection{Sandbox environment}
 One final point is that MTurk has both a ``live'' website and development \dfn{sandbox}, where the service can be tested without transacting any money. The sandbox can be a useful place to create and test HITs before making them available for workers. Note, however, that the two systems --- despite operating with identical code --- have separate databases of HITs, HITTypes, Qualifications, Workers, and Assignments so code may not directly translate between sandbox and the live server.
 
-\subsection{MTurk API and Other Packages}
-Amazon provides a software development kits for Python, Ruby, etc. as well as a rudimentary command-line utility, but no officially supported client was created for R. The \pkg{MTurkR} package fills this gap, enabling useRs to fully manage an MTurk workflow, from submitting ``messy'' data to MTurk, reviewing work completed by workers, and retrieving completed work as an R data.frame.\footnote{\pkg{MTurkR} also offers a set of interactive command-line menus for performing \pkg{MTurkR} operations without the need to write any code. An add-on package called \CRANpkg{MTurkRGUI} implements an even more robust graphical user interface using platform-independent Tcl/tk. Additional details about these \pkg{MTurkR} features are available in the package documentation and on the MTurkR wiki: \url{https://www.github.com/leeper/MTurkR}.}
+\subsection{MTurk API and other packages}
+Amazon provides a software development kits for Python, Ruby, etc.\ as well as a rudimentary command-line utility, but no officially supported client was created for R. The \pkg{MTurkR} package fills this gap, enabling useRs to fully manage an MTurk workflow, from submitting ``messy'' data to MTurk, reviewing work completed by workers, and retrieving completed work as an R data.frame.\footnote{\pkg{MTurkR} also offers a set of interactive command-line menus for performing \pkg{MTurkR} operations without the need to write any code. An add-on package called \CRANpkg{MTurkRGUI} implements an even more robust graphical user interface using platform-independent Tcl/tk. Additional details about these \pkg{MTurkR} features are available in the package documentation and on the MTurkR wiki: \url{https://www.github.com/leeper/MTurkR}.}
 
-\section{The MTurkR Package}
+\section{The MTurkR package}
 Before using MTurk, one needs to have an MTurk requester account, which can be created at \url{http://www.mturk.com}.\footnote{Note that MTurk is currently only available to requesters with a United States address and Social Security number.} It is also helpful from a practical perspective to have a worker account, so that you can test your own HITs interactively and have the requester--worker relationship necessary to test some MTurk features (e.g., contacting workers or setting up Qualifications). \pkg{MTurkR}'s access to the MTurk API requires Amazon Access Keys, which can be setup at \url{https://console.aws.amazon.com/iam/home?#security_credential}. The \dfn{keypair} is a linked \dfn{Access Key ID} and a \dfn{Secret Access Key}.
 
 \pkg{MTurkR} is implemented in a functional programming style, with the core functionality enabling the creation of HITs and retrieval of resulting assignment data. All of this functionality is described here, as well as in detailed examples in the \pkg{MTurkR} package documentation \citep{Leeper2012c}. As a web API client, the package provides a complete wrapper for all API features using function names closely mapped onto API endpoints, making it easy to cross-reference MTurk API documentation with \pkg{MTurkR} functionality. \pkg{MTurkR} performs HTTP requests to the MTurk API using \CRANpkg{curl} \citep{Ooms2015} and parses API responses using \CRANpkg{XML} \citep{TempleLang2012b}. In almost all cases, responses are converted to R data.frames. In the event an API request fails, error reporting information is returned instead of the standard data structure.\footnote{As a convenience, all API requests and responses are stored, by default, in a tab-separated value log file in the user's working directory, alongside information about API requests.}
@@ -51,17 +52,17 @@ Sys.setenv("AWS_SECRET_ACCESS_KEY" = "AWSSecretAccessKey")
 AccountBalance()
 
 # test connection to sandbox server
-GetAccountBalance(sandbox = TRUE)
+AccountBalance(sandbox = TRUE)
 \end{example}
 
 \noindent \code{AccountBalance()} returns the current balance in U.S. Dollars; for the sandbox, this is always \$10,000. The \samp{sandbox} parameter can also be changed globally with \code{options("MTurkR.sandbox" = TRUE)}. 
 
 
-\section{Data Preprocessing with MTurkR}
+\section{Data preprocessing with MTurkR}
 
 A common workflow for using MTurk involves starting with a messy data structure and wanting some better-structured resulting data structure (presumably a data.frame). To use MTurk, the analyst must break down the messy data structure into a set of individual tasks (HITs), create those HITs via \pkg{MTurkR}, allow time for workers to complete assignments, and then collect and review completed assignments before proceeding with analysis of the resulting data in R. How do we achieve this in \pkg{MTurkR}? I begin by demonstrating how to create a single HIT and then demonstrate more convenient wrapper functions for creating batches of HITs in bulk.
 
-\subsection{Creating Individual HITs}
+\subsection{Creating individual HITs}
 Creating a HIT requires first registering a HITType, which sets various worker-visible characteristics of the HIT(s), four of which are required and three that are optional:
 
 \begin{itemize}
@@ -71,7 +72,7 @@ Creating a HIT requires first registering a HITType, which sets various worker-v
 \item Duration, in seconds (required)
 \item Keywords, a comma-separated list of keywords used by workers to search for HITs (optional; default is empty)
 \item Assignment Auto-Approval Delay, a time in seconds which specifies when assignments will automatically be paid if not first rejected (optional; default is 30 days)
-\item Qualification Requirements, a complex structure which controls which workers can complete the HIT (optional; default is none)
+\item QualificationRequirements, a complex structure which controls which workers can complete the HIT (optional; default is none)
 \end{itemize}
 
 To register a HITType, at least the first four characteristics just described need to be defined in a call to \code{RegisterHITType()}, for example:
@@ -87,16 +88,18 @@ hittype1 <- RegisterHITType(title = "Tell us something",
 
 The \code{seconds()} function provides a convenient way of converting days, hours, minutes, and seconds into a total number of seconds. With the HITType created, one can begin creating individual HITs associated with that HITType using \code{CreateHIT()}.
 
-A HIT consists of a HITType and various HIT-specific attributes:
+A HIT consists of a HITType and various HIT-specific attributes, the most import of which is a ``question'' text. This contains the contents of the task as shown to the worker via an HTML iframe on the MTurk worker website. The question can be specified in one of several ways:
 
 \begin{itemize}
-\item A ``question'' text (required), consisting of one of the contents of the task to be displayed to the worker in an HTML iframe on the MTurk worker website:
-	\begin{itemize}
-		\item An HTTPS URL (or ``ExternalQuestion'') for a page containing the HIT HTML
-		\item An HTMLQuestion structure, essentially the HTML to display to the worker
-		\item A QuestionForm structure, which is a proprietary markup language used by MTurk
-		\item A HITLayoutID value retrieved from the MTurk requester website
-	\end{itemize}
+	\item An HTTPS URL (or ``ExternalQuestion'') for a page containing the HIT HTML
+	\item An HTMLQuestion structure, essentially the HTML to display to the worker
+	\item A QuestionForm structure, which is a proprietary markup language used by MTurk
+	\item A HITLayoutID value retrieved from the MTurk requester website\footnote{This is useful for creating HITs using MTurkR based on templates created on the MTurk requester website.}
+\end{itemize}
+
+\noindent In addition to one of the above question specifications, the other HIT attributes are:
+
+\begin{itemize}
 \item Duration, the number of assignments to be created for the HIT (required, default 1)
 \item Expiration, a time specifying when the HIT will expire and thus be unavailable to workers, in seconds (required, no default)
 \item Annotation, specifying a hidden value that describes the HIT as a reference for the requester (optional; default is empty)
@@ -124,7 +127,7 @@ In most cases, specifying an HTMLQuestion is the easiest approach. This simply m
 </html>
 \end{verbatim}
 
-\noindent Workers will see a rendered version of the HTMLQuestion, specifically a question --- ``What's up?'' --- and a multi-line text response they can complete (see \ref{fig:hit1}). The Javascript in the HTMLQuestion is essential for the HIT to behave properly.) To setup this HIT in the MTurk system, we use \code{CreateHIT()} using the HITTypeId created earlier, making the HIT available for 4 days and setting a private annotation field to remind us about the HIT:
+\noindent Workers will see a rendered version of the HTMLQuestion, specifically a question --- ``What's up?'' --- and a multi-line text response they can complete. The Javascript in the HTMLQuestion is essential for the HIT to behave properly.) To setup this HIT in the MTurk system, we use \code{CreateHIT()} using the HITTypeId created earlier, making the HIT available for 4 days and setting a private annotation field to remind us about the HIT:
 
 \begin{example}
 f1 <- system.file("templates/htmlquestion1.xml", package = "MTurkR")
@@ -170,9 +173,9 @@ ApproveAllAssignments(annotation = "my first HIT")
 
 \noindent Rejecting HITs works identically to the above but using \code{RejectAssignments()}. Feedback is optional for assignment approval but required for assignment rejection.\footnote{Rejected assignments can also be converted to approved within 30 days of the rejection, though the reverse operation is not possible.}
 
-\subsection{Managing Crowdworkers with QualificationTypes}
+\subsection{Managing crowdworkers with QualificationTypes}
 
-One important consideration when creating a HIT is that every HIT is, by default, available to all MTurk workers unless Qualification Requirements have been specified in the \code{RegisterHITType()} operation. Furthermore, these Qualification Requirements are attached to a HITType, not an individual HIT, so HITs directed at distinct subsets of workers need to be attached to distinct HITTypes.
+One important consideration when creating a HIT is that every HIT is, by default, available to all MTurk workers unless QualificationRequirements have been specified in the \code{RegisterHITType()} operation. Furthermore, these QualificationRequirements are attached to a HITType, not an individual HIT, so HITs directed at distinct subsets of workers need to be attached to distinct HITTypes.
 
 There are several built-in QualificationTypes that can be used as QualificactionRequirements, including country of residence and various measures of experience on MTurk (e.g., number of HITs completed, approval rate, etc.). To configure a HITType that will only be available to workers in the United States who have completed greater than 500 approved HITs, we can first use \code{GenerateQualificationRequirement()} to setup a QualificationRequirement structure locally. This involves naming the QualificationTypes to use in the QualificationRequirement, along with ``comparators'' and ``values'', which we can interpret as logical statements of the form ``Locale is equal to US'' and ``NumberApproved is greater than 500'':
 
@@ -245,12 +248,12 @@ hit2 <- CreateHIT(question = hq$string,
 
 \noindent To explain what is happening here, we create a new QualificationType that workers can ``request'' through the MTurk website. If they request it, they will automatically be assigned a score of 100 on the QualificationType. We then assign this QualificationType to all of our workers from our first HIT but at a score lower than the automatically granted value. We next create a QualifciationRequirement that will make a HIT only available to those with the automatically granted value, and we finally attach this to a HITType that we create atomically within our call to \code{CreateHIT()}. Now 10 new workers can complete this HIT, excluding the worker(s) that completed work on our first HIT.
 
-QualificationTypes and QualificationRequirements on HITTypes allow a requester to manage a large pool of workers in complex ways. Workers that have been assigned scores on a QualificationType can be retrieved using \code{GetQualifications()}, or modified using \code{UpdateQualificationScore()}. The attributes of the QualificationType itself can be changed using \code{UpdateQualificationType()}, and the QualificationType and all associated scores can be deleted using \code{DisposeQualificationTypes()}.\footnote{If a QualificationType is requestable but not automatically approved, qualification scores have be granted manually by the requester using additional functions \code{GetQualificationRequests()}, \code{GrantQualification()}, and \code{RevokeQualification()} can be used to manage requests.} QualificationTypes can also be configured with a ``qualification test'' that allows workers to submit provisional work as a measure of abilities and then qualifications can be approved/revoked manually based on their responses or even configured with an ``AnswerKey'' that will automatically evaluate the worker's test performance and assign a score for the QualificationType. Again, the \pkg{MTurkR} documentation includes extended examples and possible use cases.
+QualificationTypes and QualificationRequirements on HITTypes allow a requester to manage a large pool of workers in complex ways. Workers that have been assigned scores on a QualificationType can be retrieved using \code{GetQualifications()}, or modified using \code{UpdateQualificationScore()}. The attributes of the QualificationType itself can be changed using \code{UpdateQualificationType()}, and the QualificationType and all associated scores can be deleted using \code{DisposeQualificationTypes()}.\footnote{If a QualificationType is requestable but not automatically approved, Qualification scores have be granted manually by the requester using additional functions \code{GetQualificationRequests()}, \code{GrantQualification()}, and \code{RevokeQualification()} can be used to manage requests.} QualificationTypes can also be configured with a ``qualification test'' that allows workers to submit provisional work as a measure of abilities and then Qualifications can be approved/revoked manually based on their responses or even configured with an ``AnswerKey'' that will automatically evaluate the worker's test performance and assign a score for the QualificationType. Again, the \pkg{MTurkR} documentation includes extended examples and possible use cases.
 
 When we are done with HIT and all of its assignment data, we can delete it from the system using \code{DisposeHIT()}. This is not a reversible action, so it should be used with caution. HITs will be deleted automatically by Amazon after a period of inactivity, but cleaning up unneeded HITs can be useful given that there is no particularly good way to search for HITs within the system. The \code{SearchHITs()} operation simply returns a sorted data.frame of all HITs.
 
 
-\subsection{Creating Multiple HITs}
+\subsection{Creating multiple HITs}
 
 In addition to creating single HITs, \pkg{MTurkR} offers functionality to manage very large projects involving many HITs. This section describes that functionality in detail.
 
@@ -353,7 +356,7 @@ BulkCreateFromURLs(url = paste0("https://www.example.com/",1:3,".html"),
 
 
 
-\subsection{Addressing Problems}
+\subsection{Addressing problems}
 
 Sometimes things go wrong. Perhaps the HITs contained incorrect information or the work being performed is of low quality because of a mistake in the HIT's instructions. When these situations occur, it is easy to address problems using a host of HIT-management functions. To expire a HIT early, simply call \code{ExpireHIT()} specifying a HITId, HITTypeId, or annotation value. To delay the expiration of HIT, \code{ExtendHIT()} with a \code{add.seconds} parameter extends the specified HIT(s) by the specified number of seconds. A call to \code{ExtendHIT()} with the \code{add.assignments} parameter increases the number of available assignments for the HIT(s).\footnote{Note that this number must be positive and, therefore, the number of available assignments cannot be reduced. If you need to reduce the number of assignments completed for a HIT, simply expire the HIT once the desired number of assignments have been completed.}
 
@@ -368,7 +371,7 @@ SetHITTypeNotification(hit.type = hittype1$HITTypeId,
 \end{example}
 
 
-\section{An Example of Massive-Scale Photo Rating}
+\section{An example of massive-scale photo rating}
 
 To demonstrate the ease with which \pkg{MTurkR} can be used to preprocess a massive amount of data, I provide an example of a large-scale photo rating task. Here, I was interested in obtaining a rating of ``facial competence'' for U.S. politicians compared with ratings of faces from the general U.S. population. Facial competence is said to enhance politicians' electoral success, but previous studies have never compared these to a general population sample. Are politicians generally more facially competent than other individuals? While this is a modest research question, it demonstrates well the immense human effort needed to draw even simple conclusions from messy data structures.
 
@@ -379,13 +382,11 @@ To demonstrate the ease with which \pkg{MTurkR} can be used to preprocess a mass
 \caption{Example Photo Rating HIT}\label{fig:hit2}
 \end{figure}
 
-To provide a sampling of politicians' faces, I scraped photos of 533 members of 113th U.S. Congress from the website of the Government Printing Office. I then combined these photo data with 5000 randomly sampled images from the 10K U.S. Adult Faces Database \citep{BainbridgeIsolaOliva2013}, which provides a nationally representative sampling of U.S. faces, and standardized the image size and resolution across all faces.\footnote{Complete code to perform the scraping and image processing are provided along with supplemental material for this article at \url{https://github.com/leeper/mturkr-article} (\url{http://dx.doi.org/10.5281/zenodo.33595}).} To rate facial competence, I created a simple one-question HIT using HTML (see Figure \ref{fig:hit2}) that displayed one of the faces and asked for a rating of facial competence on a 0 to 10 scale.\footnote{The HIT additionally included questions to address possible problems (i.e., a subject recognizes a face or the image did not display properly).} I include the complete HTML file in supplemental materials for this article.
+To provide a sampling of politicians' faces, I scraped photos of 533 members of 113th U.S. Congress from the website of the Government Printing Office. I then combined these photo data with 5000 randomly sampled images from the 10K U.S. Adult Faces Database \citep{BainbridgeIsolaOliva2013}, which provides a nationally representative sampling of U.S. faces, and standardized the image size and resolution across all faces.\footnote{Complete code to perform the scraping and image processing are provided along with supplemental material for this article at \url{https://github.com/leeper/mturkr-article} (\url{http://dx.doi.org/10.5281/zenodo.33595}).} To rate facial competence, I created a simple one-question HIT using HTML (see Figure \ref{fig:hit2}) that displayed one of the faces and asked for a rating of facial competence on a 0 to 10 scale.\footnote{The HIT additionally included questions to address possible problems (i.e.\ a subject recognizes a face or the image did not display properly).} I include the complete HTML file in supplemental materials for this article.
 
 After uploading all 5533 images to an Amazon Simple Storage Service (S3) bucket, which is a simple cloud storage facility, to make the files publicly available\footnote{Any public file host could be used, not just S3.} and storing their filenames in a local RDS file, it was trivial to send these images to MTurk workers for categorization. To ensure reliability of the results, each face was rated by 5 workers. Workers were given 45 seconds to rate each face and were paid \$0.01 per face. The 27,665 images were rated a team of 225 U.S.-based workers over a period of 75 minutes. The entire operation cost \$412.50. Achieving this required three steps in \pkg{MTurkR}: (1) creating a QualificationRequirement to restrict the task to U.S.-based workers with 95\% approval ratings, (2) registering a HITType into which the HITs will be created, and (3) the creation of a batch of HITs using \code{BatchCreateFromURLs()}.
 
 \begin{example}
-library("MTurkR")
-
 # Setup Qualification Requirement
 ## U.S.-based, 95\% approval on HITs
 qual <- 
@@ -456,6 +457,14 @@ Setup in this way, it becomes trivial to analyze facial competence ratings of po
 \begin{example}
 competence <- as.numeric(a$competent)
 politician <- as.numeric(grepl("[[:digit:]]{2}-[[:digit:]]{3}", a$face))
+
+round(prop.table(table(politician, competence), 1), 2)
+#
+#           competence
+# politician    0    1    2    3    4    5    6    7    8    9   10
+#          0 0.03 0.03 0.04 0.07 0.11 0.13 0.17 0.17 0.16 0.06 0.02
+#          1 0.01 0.01 0.02 0.04 0.07 0.12 0.19 0.20 0.22 0.09 0.04
+
 wilcox.test(competence ~ politician)
 # 
 #         Wilcoxon rank sum test with continuity correction
@@ -465,7 +474,7 @@ wilcox.test(competence ~ politician)
 # alternative hypothesis: true location shift is not equal to 0
 \end{example}
 
-While this is a fairly trivial analytic conclusion, it demonstrates the ease with which crowdsourced human intelligence can be leveraged to preprocess a massive amount of data, translating messy sources into easily analyzed data. Because crowdsourcing is inherently massively parallel, it dramatically reduces the amount of time needed to parse a rough data source. In this case, the MTurk workers created the completed dataset in about 75 minutes. Were a single individual to attempt this task alone and it took (as a generous estimate) only 5 seconds to categorize each face, the task would be completed in 38.4 hours, or about 31-times as long as with MTurk.
+Politicians do appear to have higher facial competence. While this is a fairly trivial analytic conclusion, it demonstrates the ease with which crowdsourced human intelligence can be leveraged to preprocess a massive amount of data, translating messy sources into easily analyzed data. Because crowdsourcing is inherently massively parallel, it dramatically reduces the amount of time needed to parse a rough data source. In this case, the MTurk workers created the completed dataset in about 75 minutes. Were a single individual to attempt this task alone and it took (as a generous estimate) only 5 seconds to categorize each face, the task would be completed in 38.4 hours, or about 31-times as long as with MTurk.
 
 \section{Conclusion}
 

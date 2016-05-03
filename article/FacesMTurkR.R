@@ -142,6 +142,11 @@ str(a)
 # Reproduce analysis reported in manuscript
 competence <- as.numeric(a$competent)
 politician <- as.numeric(grepl("[[:digit:]]{2}-[[:digit:]]{3}", a$face))
+round(prop.table(table(politician, competence), 1), 2)
+##           competence
+## politician    0    1    2    3    4    5    6    7    8    9   10
+##          0 0.03 0.03 0.04 0.07 0.11 0.13 0.17 0.17 0.16 0.06 0.02
+##          1 0.01 0.01 0.02 0.04 0.07 0.12 0.19 0.20 0.22 0.09 0.04
 wilcox.test(competence ~ politician)
 ## 
 ##         Wilcoxon rank sum test with continuity correction
