@@ -166,7 +166,7 @@ hittype1 <- RegisterHITType(title = "Tell us something",
                             auto.approval.delay = seconds(days = 1))
 \end{example}
 
-\pkg{MTurkR}'s \code{seconds()} function provides a convenient way of converting time measurments in days, hours, minutes, or seconds into a total number of seconds. With the HITType created, one can begin creating individual HITs associated with that HITType using \code{CreateHIT()}.
+\pkg{MTurkR}'s \code{seconds()} function provides a convenient way of converting time measurements in days, hours, minutes, or seconds into a total number of seconds. With the HITType created, one can begin creating individual HITs associated with that HITType using \code{CreateHIT()}.
 
 A HIT consists of a HITType and various HIT-specific attributes, the most import of which is a ``question'' text specifying the contents of the task as shown to the worker via an HTML iframe on the MTurk worker website. Questions can be specified in one of several ways:
 
@@ -389,7 +389,7 @@ score for the QualificationType. Again, the \pkg{MTurkR} documentation
 includes extended examples and possible use cases.
 
 When finished with a HIT and all of its assignment data, it can be
-deletee from the system using \code{DisposeHIT()}. This is not a
+deleted from the system using \code{DisposeHIT()}. This is not a
 reversible action, so it should be used with caution. HITs will be
 deleted automatically by Amazon after a period of inactivity, but
 cleaning up unneeded HITs can be useful given that there is no
